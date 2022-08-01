@@ -17,9 +17,9 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.Store.Connect (Connected, connect)
 import Halogen.Store.Monad (class MonadStore)
-import Halogen.Store.Select (selectEq)
+import Halogen.Store.Select (select)
 import Routing.Duplex as RD
-import Routing.Hash (getHash)
+import Routing.PushState (PushStateInterface)
 import Type.Proxy (Proxy(..))
 
 data Query a = Navigate Route a
@@ -29,9 +29,10 @@ type OpaqueSlot slot = forall query. H.Slot query Void slot
 
 type State =
   { route :: Maybe Route
+  , psi :: PushStateInterface
   }
-deriveState :: forall a. Connected a Input -> State
-deriveState _ = { route: Nothing }
+deriveState :: Connected PushStateInterface Input -> State
+deriveState { context } = { route: Nothing, psi: context }
 
 
 data Action
@@ -49,7 +50,7 @@ component
   => LogMessages m
   => Navigate m
   => H.Component Query Input Void m
-component = connect (selectEq _.envType) $ H.mkComponent
+component = connect (select (\_ _ -> true) _.psi) $ H.mkComponent
   { initialState: deriveState
   , render
   , eval: H.mkEval $ H.defaultEval
@@ -62,10 +63,12 @@ component = connect (selectEq _.envType) $ H.mkComponent
   handleAction :: Action -> H.HalogenM State Action ChildSlots Void m Unit
   handleAction = case _ of
     Initialize -> do
+      { psi } <- H.get
       -- first we'll get the route the user landed on
-      initialRoute <- hush <<< (RD.parse routeCodec) <$> liftEffect getHash
+      initialRoute <- hush <<< (RD.parse routeCodec <<< _.path) <$> liftEffect psi.locationState
       -- then we'll navigate to the new route (also setting the hash)
       void <<< sequence $ navigate <$> initialRoute
+      --navigate $ fromMaybe Home initialRoute
       pure unit
 
 

@@ -3,8 +3,8 @@ module EB.AppM where
 import Prelude
 
 import EB.Capability.LogMessages (class LogMessages)
-import EB.Capability.Now (class Now)
 import EB.Capability.Navigate (class Navigate)
+import EB.Capability.Now (class Now)
 import EB.Data.Log as Log
 import EB.Data.Route as Route
 import EB.Store (Action, EnvironmentType(..), Store)
@@ -14,6 +14,7 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Console as Console
 import Effect.Now as Now
+import Foreign (unsafeToForeign)
 import Halogen as H
 import Halogen.Store.Monad (class MonadStore, StoreT, getStore, runStoreT)
 import Routing.Duplex (print)
@@ -48,5 +49,6 @@ instance logMessagesAppM :: LogMessages AppM where
       _, _ -> Console.log $ Log.message log
 
 instance navigateAppM :: Navigate AppM where
-  navigate =
-    liftEffect <<< setHash <<< print Route.routeCodec
+  navigate x = do
+    { psi } <- getStore
+    liftEffect $ psi.pushState (unsafeToForeign unit) $ print Route.routeCodec x
