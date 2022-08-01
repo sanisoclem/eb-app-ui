@@ -9,13 +9,16 @@
   },
   "private": true,
   "scripts": {
+    "postinstall": "spago install",
+    "clean": "rm -rf node_modules output .spago dist/*.js *.lock .cache",
     "build": "spago build",
     "test": "spago test",
-    "serve": "parcel dev/index.html --open",
-    "build-prod": "mkdir -p prod && cp dev/index.html prod/ && rm -rf dist && spago bundle-app --to prod/index.js && parcel build prod/index.html"
+    "esbuild": "esbuild --bundle index.js",
+    "bundle": "npm run build && npm run esbuild -- --minify --outfile=dist/index.js",
+    "serve": "npm run esbuild -- --servedir=dist --outdir=dist"
   },
   "devDependencies": {
-    "parcel": "^2.6.2",
+    "esbuild": "^0.14.51",
     "purescript": "^0.15.4",
     "spago": "^0.20.9"
   }
