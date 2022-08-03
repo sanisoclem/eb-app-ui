@@ -22,4 +22,4 @@ dce-output
 *.map
 
 # Dist
-dist/*.js
+dist

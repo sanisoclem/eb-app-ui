@@ -18,7 +18,6 @@ import Foreign (unsafeToForeign)
 import Halogen as H
 import Halogen.Store.Monad (class MonadStore, StoreT, getStore, runStoreT)
 import Routing.Duplex (print)
-import Routing.Hash (setHash)
 import Safe.Coerce (coerce)
 
 newtype AppM a = AppM (StoreT Store.Action Store.Store Aff a)
