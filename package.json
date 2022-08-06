@@ -18,6 +18,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^3.14.1",
     "autoprefixer": "^10.4.8",
     "cssnano": "^5.1.12",
     "esbuild": "^0.14.51",
