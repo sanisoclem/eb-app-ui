@@ -5,10 +5,11 @@ export const onRequestPost: PagesFunction<{
   try {
     const id = env.LEDGER_DO.newUniqueId();
     const stub = env.LEDGER_DO.get(id);
-    return await stub.fetch("https://eb-app-ui.pages.dev", {
+    await stub.fetch("https://eb-app-ui.pages.dev", {
       method: "POST",
       body: payload,
     });
+    return new Response(id.toString());
   } catch (e: any) {
     console.log(e);
     return new Response(`Hello, world! ${payload} ${JSON.stringify(e.message)}`);
