@@ -8,8 +8,8 @@ export const onRequestPost: PagesFunction<{
       method: "POST",
       body: await request.json(),
     });
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
-    return new Response(`Hello, world! ${JSON.stringify(e)}`);
+    return new Response(`Hello, world! ${JSON.stringify(e.message)}`);
   }
 };
