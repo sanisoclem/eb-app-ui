@@ -33,6 +33,8 @@ to generate this file without the comments in this block.
   , "safe-coerce"
   , "transformers"
   , "tuples"
+  , "eb-app-data"
+  , "uuid"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

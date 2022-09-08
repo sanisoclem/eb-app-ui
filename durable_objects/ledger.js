@@ -14,7 +14,7 @@ export class Ledger {
         await this.state.storage.delete("ledger");
         return new Response('OK', { status: 200 });
       case 'GET':
-        return jsonResponse(await this.state.storage.get("ledger"));
+        return new Response(JSON.stringify(await this.state.storage.get("ledger")));
     }
   }
 }
