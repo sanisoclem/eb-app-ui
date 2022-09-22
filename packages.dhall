@@ -141,5 +141,5 @@ in  upstream
     , repo =
         "https://github.com/sanisoclem/eb-app-data.git"
     , version =
-        "v0.1.1"
+        "v0.1.2"
     }

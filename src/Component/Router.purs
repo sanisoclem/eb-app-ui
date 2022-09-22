@@ -10,6 +10,7 @@ import EB.Capability.Navigate (class Navigate, navigate)
 import EB.Capability.Now (class Now)
 import EB.Data.Route (Route(..), routeCodec)
 import EB.Page.Home as Home
+import EB.Page.Dashboard as Dashboard
 import EB.Store as Store
 import Effect.Aff.Class (class MonadAff)
 import Halogen (liftEffect)
@@ -40,6 +41,7 @@ data Action
 
 type ChildSlots =
   ( home :: OpaqueSlot Unit
+  , dashboard :: OpaqueSlot Unit
   )
 
 component
@@ -50,7 +52,7 @@ component
   => LogMessages m
   => Navigate m
   => H.Component Query Input Void m
-component = connect (select (\_ _ -> true) _.psi) $ H.mkComponent
+component = connect (select (const <<< const $ false) _.psi) $ H.mkComponent
   { initialState: deriveState
   , render
   , eval: H.mkEval $ H.defaultEval
@@ -65,12 +67,10 @@ component = connect (select (\_ _ -> true) _.psi) $ H.mkComponent
     Initialize -> do
       { psi } <- H.get
       -- first we'll get the route the user landed on
-      initialRoute <- hush <<< (RD.parse routeCodec <<< _.path) <$> liftEffect psi.locationState
+      initialRoute <- hush <<< RD.parse routeCodec <<< _.path <$> liftEffect psi.locationState
       -- then we'll navigate to the new route (also setting the hash)
       void <<< sequence $ navigate <$> initialRoute
       --navigate $ fromMaybe Home initialRoute
-      pure unit
-
 
   handleQuery :: forall a. Query a -> H.HalogenM State Action ChildSlots Void m (Maybe a)
   handleQuery = case _ of
@@ -86,5 +86,7 @@ component = connect (select (\_ _ -> true) _.psi) $ H.mkComponent
     Just r -> case r of
       Home ->
         HH.slot_ (Proxy :: _ "home") unit Home.component unit
+      Dashboard ->
+        HH.slot_ (Proxy :: _ "dashboard") unit Dashboard.component unit
     Nothing ->
       HH.div_ [ HH.text "Oh no! That page wasn't found." ]
